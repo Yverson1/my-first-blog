@@ -1,29 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Django Girls Blog</title>
-</head>
-<body>
-    <header>
-        <h1><a href="/">Django Girls Blog</a></h1>
-        <time>published: 10/12/2023 : 10:58</time>
-    </header>
-
-
-    <article>
-
-        <h2><a href="">my first post</a></h2>
-        <p> I am the fastest man Alive, I got hit by a lightning bolt and woke up with superpowers wow.</p>
-        <time>published: 12/10/2024 : 10:58</time>
-    </article>
-    
-    <article>
-
-        <h2><a href=""> my second post</a></h2>
-        <p> I am the greatest detective that ever lived, I can solve any case in a matter of seconds.</p>
-        <time>published: 12/10/2025 : 10:58</time>
-    </article>
-
-    
-</body>
-</html> 
+{% extends "blog/base.html" %}
+{% block content %}
+{% for post in posts %}
+  <article class="post">
+    <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+    <p>{{ post.text | linebreaks }}</p>
+    <time class="date">published: {{ post.published_date }}</time>
+  </article>
+{% endfor %}
+{% endblock %}

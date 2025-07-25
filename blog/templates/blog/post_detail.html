@@ -8,15 +8,53 @@
       <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk%}">
         {% include './icons/pencil-fill.svg' %}
       </a>
-      {% endif %}
     </aside>
+      <form method="POST" action="{% url 'post_remove' pk=post.pk %}" class="actions">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" name="delete">Delete</button>
+      </form>
+
+      {% endif %}
+    
 
   {% if post.published_date %}
     <time class ="date">published: {{ post.published_date }}</time>
-    {% endif %}
+  {% else %}
+   <form method="POST" action="{% url 'post_publish' pk=post.pk %}" class="post-form">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary" name="publish">Publish</button>
+   </form>
+
+     
+  {% endif %}
   <h2>{{ post.title }}</h2>
   <p>{{ post.text | linebreaks }}</p>
 
   </article>
 
- {% endblock %}
+  <hr> 
+  <a class="btn btn-secondary" href="{% url 'add_comment_to_post' pk=post.pk %}">Add Comment</a>
+
+{% for comment in post.comments.all %}
+    {% if user.is_authenticated and user.is_staff or comment.approved_comment %}
+    <div class="comment">
+        <div class="date">
+            {{ comment.created_date }}
+            {% if not comment.approved_comment %}
+                <a class="btn btn-secondary" href="{% url 'comment_remove' pk=comment.pk %}">
+                   {% include './icons/hand-thumbs-down.svg' %}
+                </a>
+                <a class="btn btn-secondary" href="{% url 'comment_approve' pk=comment.pk %}">
+                   {% include './icons/hand-thumbs-up.svg' %}
+                </a>
+            {% endif %}
+        </div>
+        <strong>{{ comment.author }}</strong>
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+    {% endif %}
+{% empty %}
+    <p>No comments here yet </p>
+{% endfor %}
+
+{% endblock %}
